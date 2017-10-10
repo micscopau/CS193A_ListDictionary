@@ -45,41 +45,14 @@ public class DictionaryActivity extends AppCompatActivity {
 
         list.setAdapter(adapter);
 
-///  list.setOnItemClickListener(this); ///Third method, must implement stanford library version
-        list.setOnItemClickListener(new Mike()); ///Second Method
 
-/// //// First Method... new technique is creating seperate class below
-//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                String word = parent.getItemAtPosition(position).toString();
-//                String defn = dictionary.get(word);
-//
-//                Toast.makeText(getApplicationContext(), defn, Toast.LENGTH_SHORT).show(); //toast(defn);
-//
-//            }
-//        });
+        list.setOnItemClickListener( (parent, view, position, id) -> {
+                String word = parent.getItemAtPosition(position).toString();
+                String defn = dictionary.get(word);
 
-    }
-        ///Second Method
-      class Mike implements AdapterView.OnItemClickListener{
-          @Override
-         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-              String word = parent.getItemAtPosition(position).toString();
-              String defn = dictionary.get(word);
-
-               Toast.makeText(getApplicationContext(), defn, Toast.LENGTH_SHORT).show(); //toast(defn);
-
+                Toast.makeText(getApplicationContext(), defn, Toast.LENGTH_SHORT).show(); //toast(defn);
            }
-        }
-
-////   public void onItemClick(ListView parent, View view, int position, long id) {
-////       String word = parent.getItemAtPosition(position).toString();
-////        String defn = dictionary.get(word);
-////
-////        Toast.makeText(getApplicationContext(), defn, Toast.LENGTH_SHORT).show(); //toast(defn);
-////
-////    }
-////    }
+        );
+    }
 
 }
