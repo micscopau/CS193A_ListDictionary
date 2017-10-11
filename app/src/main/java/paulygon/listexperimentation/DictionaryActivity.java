@@ -24,9 +24,7 @@ public class DictionaryActivity extends AppCompatActivity {
     private Map<String, String> dictionary;
     private List<String> words;
 
-    private void readFileData(){
-        Scanner scan = new Scanner(getResources().openRawResource(R.raw.simpledict));
-
+    private void readFileHelper(Scanner scan){
         while(scan.hasNextLine()) {
             String line = scan.nextLine();
             String[] parts = line.split("\t");
@@ -34,6 +32,20 @@ public class DictionaryActivity extends AppCompatActivity {
             dictionary.put(parts[0], parts[1]);
             words.add(parts[0]);
         }
+    }
+
+    private void readFileData(){
+        Scanner scan = new Scanner(getResources().openRawResource(R.raw.simpledict));
+
+        readFileHelper(scan);
+
+        try {
+            Scanner scan2 = new Scanner(openFileInput("added_words.txt"));
+            readFileHelper(scan2);
+        } catch (Exception e){
+            // do nothing...
+        }
+
     }
 
 
@@ -85,26 +97,11 @@ public class DictionaryActivity extends AppCompatActivity {
 
 
         ListView list = (ListView) findViewById(R.id.word_list);
-        /* Unused once changed to game version
-        //Dynamic List in Android
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, //activity
-                android.R.layout.simple_list_item_1, //layout,
-                new ArrayList<String>(dictionary.keySet()) //WORDS //array
-        );
-        list.setAdapter(adapter);
-        */
 
+        //Lambda function used to determine specific item in a list that is clicked
         list.setOnItemClickListener( (parent, view, position, id) -> {
-               /* Unused once changed to game version
-                String word = parent.getItemAtPosition(position).toString();
-                String defn = dictionary.get(word);
-                Toast.makeText(getApplicationContext(), defn, Toast.LENGTH_SHORT).show(); //toast(defn);
-                */
-                String defnClicked = parent.getItemAtPosition(position).toString();
 
-                //TextView wordText = (TextView) findViewById(R.id.the_word);
-                //String theWord = wordText.getText().toString();
+                String defnClicked = parent.getItemAtPosition(position).toString();
                 String theWord = ((TextView) findViewById(R.id.the_word)).getText().toString();
                 String correctDefn = dictionary.get(theWord);
 
