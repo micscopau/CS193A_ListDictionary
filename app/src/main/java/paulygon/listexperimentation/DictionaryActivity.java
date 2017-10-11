@@ -1,7 +1,11 @@
 package paulygon.listexperimentation;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,8 +25,12 @@ import stanford.androidlib.*;
 
 public class DictionaryActivity extends AppCompatActivity {
 
+    private static final String TAG = "DictionaryActivity";
     private Map<String, String> dictionary;
     private List<String> words;
+    private MediaPlayer mp;
+    private int points;
+    private int highScore;
 
     private void readFileHelper(Scanner scan){
         while(scan.hasNextLine()) {
@@ -83,9 +91,19 @@ public class DictionaryActivity extends AppCompatActivity {
 
     }
 
+    public void addWordClick(View view) {
+        Intent intent = new Intent(this, AddWordActivity.class);
+        startActivity(intent);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate() called");
+
+        points = 0;
+
         setContentView(R.layout.activity_dictionary);
 
         dictionary = new HashMap<>();
@@ -106,14 +124,84 @@ public class DictionaryActivity extends AppCompatActivity {
                 String correctDefn = dictionary.get(theWord);
 
                 if (defnClicked.equals(correctDefn)){
-                    Toast.makeText(getApplicationContext(), "You are right!", Toast.LENGTH_SHORT).show();
+                    points++;
+                    if (points > highScore){
+                        highScore = points;
+
+                        SharedPreferences prefs = getSharedPreferences("myprefs", MODE_PRIVATE);
+                        SharedPreferences.Editor prefsEditor = prefs.edit();
+                        prefsEditor.putInt("highScore", highScore);
+                        prefsEditor.apply(); //.commit() might also work
+
+                    }
+                    Toast.makeText(getApplicationContext(), "You are right! Score = " + points + ", highScore = " + highScore, Toast.LENGTH_SHORT).show();
                 } else{
-                    Toast.makeText(getApplicationContext(), "Oops wrong  :(", Toast.LENGTH_SHORT).show();
+                    points--;
+                    Toast.makeText(getApplicationContext(), "Oops wrong  :(  Score: " + points + ", highScore = " + highScore, Toast.LENGTH_SHORT).show();
+
                 }
 
                 chooseWords();
            }
         );
+
+        //load high score
+        SharedPreferences prefs = getSharedPreferences("myprefs", MODE_PRIVATE);
+        highScore = prefs.getInt("highScore", /*default*/ 0);
+
+        mp = MediaPlayer.create(this, R.raw.cartoon_computer);
+        mp.start();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart() called");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause() called");
+
+        mp.pause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume() called");
+
+        mp.start();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop() called");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy() called");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState() called");
+
+        outState.putInt("points", points);
+
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "onRestoreInstanceState() called");
+        points = savedInstanceState.getInt("points", /*Default */ 0 );
+
     }
 
 }

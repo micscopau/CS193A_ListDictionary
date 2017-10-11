@@ -26,4 +26,10 @@
 
     </ListView>
 
+    <Button
+        android:text="Add a Word"
+        android:onClick="addWordClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>
